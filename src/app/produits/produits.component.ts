@@ -1,0 +1,49 @@
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Produit } from '../model/produit.model';
+import { AuthService } from '../service/auth.service';
+import { ProduitService } from '../service/produit.service';
+
+@Component({
+  selector: 'app-produits',
+  templateUrl: './produits.component.html'
+})
+export class ProduitsComponent implements OnInit {
+
+    produits! : Produit[]; //un tableau de produits
+
+  constructor(private produitService: ProduitService,
+    private router :Router,
+    public authService: AuthService) {
+   //this.produits = produitService.listeProduits();
+     }
+
+  ngOnInit(): void {
+    this.produitService.listeProduit().subscribe(prods => {
+      console.log(prods);
+      this.produits = prods;
+      });
+
+    
+  }
+
+  supprimerProduit(p: Produit)
+  {
+  let conf = confirm("Etes-vous sûr ?");
+  if (conf)
+  this.produitService.supprimerProduit(p.idProduit).subscribe(() => {
+  console.log("produit supprimé");
+  this.SuprimerProduitDuTableau(p);
+
+  });
+  }
+  SuprimerProduitDuTableau(prod : Produit) {
+    this.produits.forEach((cur, index) => {
+    if(prod.idProduit=== cur.idProduit) {
+    this.produits.splice(index, 1);
+    }
+    });
+    }
+
+}
+
